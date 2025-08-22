@@ -3,6 +3,7 @@ package wgu.edu.BrinaBright.Entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.locationtech.jts.geom.Geometry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,21 @@ import java.util.List;
 public class Municipality {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String zipCenter;
+
+    @Column(name = "zip_center")
+    private Geometry zipCenter;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "state")
     private String state;
+
+    @Column(name="county")
     private String county;
 
+    @Column(name = "geo_bounds")
+    private Geometry geoBounds;
 
     @OneToMany(mappedBy = "municipality", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @OrderBy("effectiveStart ASC")

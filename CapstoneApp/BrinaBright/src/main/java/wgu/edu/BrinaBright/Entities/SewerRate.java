@@ -17,8 +17,15 @@ public class SewerRate {
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "municipality_id", nullable = false)
     private Municipality municipality;
 
-    private BigDecimal baseFlat;
-    private Integer baseIncludedGal;      // often 0; sewer usually flat
+    @Column (name = "base_rate")
+    private BigDecimal baseRate;
+
+    @Column(name = "base_gallons")
+    private Integer baseIncludedGal;// often 0; sewer usually flat
+
+    @Column(name = "create_date")
     private LocalDate effectiveStart;
+
+    @Column(name = "end_date")
     private LocalDate effectiveEnd;
 }
