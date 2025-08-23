@@ -18,7 +18,9 @@ public class RateVariance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "wflat_rate_range"  )
+
+
+    @Column(name = "wflat_rate_range")
     private Boolean waterFlatRateRange;
 
     @Column(name = "water_ppu")
@@ -33,7 +35,8 @@ public class RateVariance {
     @Column(name = "sewer_ppu")
     private BigDecimal sewerPPU;
 
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "municipality_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "municipality_id", nullable = false)
     private Municipality municipality;
 
 
@@ -45,8 +48,10 @@ public class RateVariance {
     private LocalDate effectiveEnd;       // nullable
 
 
-
     @Column(name = "priority")
     private Integer priority;
+
+
+
 
 }

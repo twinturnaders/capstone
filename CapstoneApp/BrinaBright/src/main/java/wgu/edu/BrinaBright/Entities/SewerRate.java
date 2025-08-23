@@ -20,6 +20,9 @@ public class SewerRate {
     @Column (name = "base_rate")
     private BigDecimal baseRate;
 
+    @Column(name = "fixed_rate")
+    private Boolean fixedRate;
+
     @Column(name = "base_gallons")
     private Integer baseIncludedGal;// often 0; sewer usually flat
 

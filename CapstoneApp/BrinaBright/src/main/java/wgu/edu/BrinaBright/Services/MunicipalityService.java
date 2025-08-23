@@ -1,0 +1,97 @@
+package wgu.edu.BrinaBright.Services;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import wgu.edu.BrinaBright.DTOs.*;
+import wgu.edu.BrinaBright.Entities.Municipality;
+import wgu.edu.BrinaBright.Entities.SewerRate;
+import wgu.edu.BrinaBright.Entities.WaterRate;
+import wgu.edu.BrinaBright.Repos.MunicipalityRepository;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class MunicipalityService {
+
+    private final MunicipalityRepository municipalityRepository;
+    private final RateCalculatorService rateCalculatorService;
+
+    private List<RateVarianceDTO> getWaterVariances(Municipality m) {
+        return m.getRateVariances().stream()
+                .filter(rv -> rv.getWaterPPU() != null)
+                .map(RateVarianceDTO::fromWater)
+                .toList();
+    }
+
+
+
+
+
+    public List<RateSummaryDTO> findNearbyRates(String zip, double radiusMeters, double usageGal) {
+        List<Municipality> municipalities = municipalityRepository.findMunicipalitiesNearZip(zip, radiusMeters);
+        return municipalities.stream()
+                .map(m -> mapToRateSummary(m, (int) usageGal))
+                .toList();
+    }
+    private SewerRateDTO getSewerRateDTO(Municipality m) {
+        SewerRate rate = m.getSewerRates().stream().findFirst().orElse(null);
+        if (rate == null) return null;
+
+        return new SewerRateDTO(
+                rate.getBaseRate(),
+                rate.getBaseIncludedGal(),
+                rate.getFixedRate(),
+                Boolean.TRUE.equals(rate.getFixedRate()) ? "Fixed rate" : "Rate varies by use"
+
+        );
+    }
+
+    private WaterRateDTO getWaterRateDTO(Municipality m) {
+        WaterRate rate = m.getWaterRates().stream().findFirst().orElse(null);
+        if (rate == null) return null;
+
+        return new WaterRateDTO(
+                rate.getBaseRate(),
+                rate.getBaseGal(),
+                rate.getFixedRate(),
+                Boolean.TRUE.equals(rate.getFixedRate()) ? "Fixed rate" : "Rate varies by use"
+
+        );
+    }
+
+    private RateSummaryDTO mapToRateSummary(Municipality m, Integer usageGal) {
+        WaterRate water = m.getWaterRates().stream().findFirst().orElse(null);
+        SewerRate sewer = m.getSewerRates().stream().findFirst().orElse(null);
+
+        List<FeeDTO> fees = m.getFees().stream()
+                .filter(f -> Boolean.TRUE.equals(f.getBaseFee()))
+                .map(FeeDTO::fromEntity)
+                .toList();
+
+        BigDecimal estWater = usageGal != null ? rateCalculatorService.calculateWaterCharge(m, usageGal) : null;
+        BigDecimal estSewer = usageGal != null
+                ? rateCalculatorService.calculateSewerCharge(m, usageGal)
+                : null;
+
+        return new RateSummaryDTO(
+                m.getName(),
+                m.getCounty(),
+                m.getState(),
+
+
+                water != null ? water.getBaseRate() : null,
+                water != null ? water.getFixedRate() : null,
+                water != null ? water.getBaseGal() : null,
+                getWaterVariances(m),
+                getWaterRateDTO(m),
+                getSewerRateDTO(m),
+
+
+                fees,
+                estWater,
+                estSewer
+        );
+    }
+}
