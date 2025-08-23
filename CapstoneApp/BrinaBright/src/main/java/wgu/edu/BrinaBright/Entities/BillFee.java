@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 @Entity
 @Table(name = "bill_fees")
@@ -15,7 +16,7 @@ import java.math.BigDecimal;
 @Data
 public class BillFee {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "bill_id", nullable = false)
     private UserBill userBill;

@@ -3,21 +3,13 @@ package wgu.edu.BrinaBright.Entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import wgu.edu.BrinaBright.Enums.CustomerClass;
-import wgu.edu.BrinaBright.Enums.PricingModel;
-import wgu.edu.BrinaBright.Enums.ScopeArea;
-import wgu.edu.BrinaBright.Enums.ServiceType;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
-@Entity @Table(name = "rate_variances",
-        indexes = {
-                @Index(name="rv_muni_service_idx", columnList = "municipality_id, serviceType, customerClass, scopeArea, effectiveStart"),
-                @Index(name="rv_muni_priority_idx", columnList = "municipality_id, serviceType, priority")
-        }
-)
+@Entity @Table(name = "rate_variances")
 @Data
 @NoArgsConstructor
 public class RateVariance {
@@ -43,15 +35,6 @@ public class RateVariance {
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "municipality_id", nullable = false)
     private Municipality municipality;
-
-    @Enumerated(EnumType.STRING) @Column(nullable = false)
-    private ServiceType serviceType;      // WATER or SEWER
-
-    @Enumerated(EnumType.STRING) @Column(nullable = false)
-    private CustomerClass customerClass = CustomerClass.ALL;
-
-    @Enumerated(EnumType.STRING) @Column(nullable = false)
-    private ScopeArea scopeArea = ScopeArea.ALL;
 
 
     @Column(name = "created_at")

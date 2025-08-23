@@ -3,7 +3,7 @@ package wgu.edu.BrinaBright.Entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import wgu.edu.BrinaBright.Enums.ServiceType;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,8 +22,6 @@ public class UserBill {
     @Column(name = "paid_date")
     private LocalDate paidDate;
 
-    @Column(name = "paid_date")
-    private LocalDate paid_date;
 
     private Boolean paid;
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +30,6 @@ public class UserBill {
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING) @Column(nullable = false)
-    private ServiceType serviceType;      // WATER or SEWER, if you store separately; or drop if you store combined
 
     @Column(name = "bill_date")
     private LocalDate billDate;
@@ -51,7 +47,7 @@ public class UserBill {
     @Column(name = "sewer_use_amount")
     private BigDecimal sewerUsage;
 
-    @OneToMany(mappedBy = "userBill", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @OrderBy("feeAmount DESC")
     private List<BillFee> billFees = new ArrayList<>();
 }

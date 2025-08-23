@@ -16,10 +16,10 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, name = "email")
+    @Column(unique = true, name = "email")
     private String email;
 
-    @Column(unique = true, nullable = false, name = "passwordhash")
+    @Column( name = "passwordhash")
     private String passwordHash; // (store hash!)
 
 
