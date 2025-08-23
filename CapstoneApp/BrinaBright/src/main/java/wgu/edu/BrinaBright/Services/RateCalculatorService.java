@@ -30,9 +30,8 @@ public class RateCalculatorService {
             total = total.add(calculateTieredCharge(variances, usageGal, overage));
         }
 
-        // Add base fees
         total = total.add(calculateBaseFees(m));
-        return total.setScale(2, RoundingMode.HALF_UP);
+        return total.setScale(2, RoundingMode.UP);
     }
 
     public BigDecimal calculateSewerCharge(Municipality m, int usageGal) {
@@ -61,9 +60,8 @@ public class RateCalculatorService {
             }
         }
 
-        // Add base fees
         total = total.add(calculateBaseFees(m));
-        return total.setScale(2, RoundingMode.HALF_UP);
+        return total.setScale(2, RoundingMode.UP);
     }
 
     private BigDecimal calculateTieredCharge(List<RateVariance> variances, int usageGal, int overage) {
@@ -74,8 +72,7 @@ public class RateCalculatorService {
             int min = rv.getWaterRangeMin();
             int max = rv.getWaterRangeMax() == 0 ? Integer.MAX_VALUE : rv.getWaterRangeMax();
 
-            if (rv.getWaterFlatRateRange() != null && rv.getWaterFlatRateRange()) {
-                // Flat charge for full range
+            if (Boolean.TRUE.equals(rv.getWaterFlatRateRange())) {
                 if (usageGal > min && usageGal <= max) {
                     additional = additional.add(rv.getWaterPPU());
                     break;
