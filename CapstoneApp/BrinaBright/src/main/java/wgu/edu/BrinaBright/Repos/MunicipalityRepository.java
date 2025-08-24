@@ -72,4 +72,21 @@ public interface MunicipalityRepository extends JpaRepository<Municipality, Long
     );
 
 
-}
+        @Query(value = """
+        SELECT m.id, ST_Distance(
+            CAST(m.zip_center AS geography),
+            CAST(z.zip_center AS geography)
+        ) AS distance
+        FROM municipalities m
+        JOIN zip_codes z ON z.zip_code = :zip
+        WHERE ST_DWithin(
+            CAST(m.zip_center AS geography),
+            CAST(z.zip_center AS geography),
+            :radius
+        )
+        ORDER BY distance ASC
+        """, nativeQuery = true)
+        List<Object[]> findMunicipalityIdsAndDistance(@Param("zip") String zip, @Param("radius") double radiusMeters);
+    }
+
+

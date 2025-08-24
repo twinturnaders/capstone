@@ -3,6 +3,7 @@ package wgu.edu.BrinaBright.Security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +22,12 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/rates/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/rates/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/rates/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/rates/**").permitAll()
+                .requestMatchers("api/auth/refresh").authenticated()
+                .requestMatchers("/api/userbills/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
