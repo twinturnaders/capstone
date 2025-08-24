@@ -27,10 +27,10 @@ public class RateVariance {
     private BigDecimal waterPPU;
 
     @Column(name = "wrange_min")
-    private int waterRangeMin;
+    private Integer waterRangeMin;
 
     @Column(name = "wrange_max")
-    private int waterRangeMax;
+    private Integer waterRangeMax;
 
     @Column(name = "sewer_ppu")
     private BigDecimal sewerPPU;

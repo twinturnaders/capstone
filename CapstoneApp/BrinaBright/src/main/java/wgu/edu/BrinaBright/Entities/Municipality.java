@@ -48,4 +48,8 @@ public class Municipality {
     @OneToMany(mappedBy = "municipality", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @OrderBy(" waterRangeMin ASC")
     private List<RateVariance> rateVariances = new ArrayList<>();
+
+    @OneToMany(mappedBy = "municipality", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @OrderBy(" effectiveStart ASC")
+    private List<SewerRateVariance> sewerRateVariances = new ArrayList<>();
 }

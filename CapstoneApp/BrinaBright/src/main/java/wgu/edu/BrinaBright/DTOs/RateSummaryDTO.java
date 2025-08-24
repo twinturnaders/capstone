@@ -1,32 +1,39 @@
 package wgu.edu.BrinaBright.DTOs;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@lombok.AllArgsConstructor
+@lombok.Builder
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RateSummaryDTO {
-    String municipalityName;
-    String county;
-    String state;
 
-    BigDecimal waterBaseRate;
-    Boolean waterFixed;
-    Integer waterBaseGal;
-    List<RateVarianceDTO> waterVariances;
+    private String name;
+    private String county;
+    private String state;
+    private BigDecimal waterBaseRate;
+    private Boolean waterFixed;
+    private Integer waterBaseGal;
+    private List<RateVarianceDTO> waterVariances;
+    private SewerRateDTO sewerRate;
+    private SewerRateVarianceDTO sewerRateVariance;
+    private List<FeeDTO> baseFees;
+    private BigDecimal estimatedWaterCharge;
+    private BigDecimal estimatedSewerCharge;
 
-    SewerRateDTO sewerRate;
 
-    List<FeeDTO> baseFees;
-    BigDecimal estimatedWaterCharge;
-    BigDecimal estimatedSewerCharge;
 
-    public RateSummaryDTO(String name, String county, String state, BigDecimal bigDecimal, Boolean aBoolean, Integer integer, List<RateVarianceDTO> waterVariances, WaterRateDTO waterRateDTO, SewerRateDTO sewerRateDTO, List<FeeDTO> fees, BigDecimal estWater, BigDecimal estSewer) {
 
-    }
+
+
 }
+
+
+
+

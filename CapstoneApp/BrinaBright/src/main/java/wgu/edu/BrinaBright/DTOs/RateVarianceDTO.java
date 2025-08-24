@@ -17,6 +17,8 @@ public class RateVarianceDTO {
     private Integer rangeMax;
     private BigDecimal pricePerUnit;
 
+    public RateVarianceDTO(BigDecimal sewerPpu) {
+    }
 
 
     public static RateVarianceDTO fromWater(RateVariance rv) {

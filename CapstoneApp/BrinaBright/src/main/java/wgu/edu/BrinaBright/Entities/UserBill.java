@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity @Table(name = "user_bills",
-        indexes = @Index(name="bill_user_muni_date_idx", columnList = "user_id, municipality_id, billDate"))
+        indexes = @Index(name="bill_user_muni_date_idx", columnList = "user_id, billDate"))
 @Data
 @NoArgsConstructor
 public class UserBill {

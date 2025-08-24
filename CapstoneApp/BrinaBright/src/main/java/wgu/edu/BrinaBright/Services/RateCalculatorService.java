@@ -69,8 +69,10 @@ public class RateCalculatorService {
         int remaining = overage;
 
         for (RateVariance rv : variances) {
-            int min = rv.getWaterRangeMin();
-            int max = rv.getWaterRangeMax() == 0 ? Integer.MAX_VALUE : rv.getWaterRangeMax();
+            int min = rv.getWaterRangeMin() == null ? 0 : rv.getWaterRangeMin();
+            int max = (rv.getWaterRangeMax() == null || rv.getWaterRangeMax() == 0)
+                    ? Integer.MAX_VALUE
+                    : rv.getWaterRangeMax();
 
             if (Boolean.TRUE.equals(rv.getWaterFlatRateRange())) {
                 if (usageGal > min && usageGal <= max) {
