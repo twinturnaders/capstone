@@ -8,7 +8,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Entity @Table(name = "user_bills",
         indexes = @Index(name="bill_user_muni_date_idx", columnList = "user_id, billDate"))
@@ -24,10 +26,12 @@ public class UserBill {
 
 
     private Boolean paid;
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
 
@@ -47,7 +51,33 @@ public class UserBill {
     @Column(name = "sewer_use_amount")
     private BigDecimal sewerUsage;
 
-    @OneToMany(mappedBy = "id", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @OrderBy("feeAmount DESC")
-    private List<BillFee> billFees = new ArrayList<>();
+
+    public Map<String, BigDecimal> getFees() {
+        return fees;
+    }
+
+    public void setFees(Map<String, BigDecimal> fees) {
+        this.fees = fees;
+    }
+
+    @ElementCollection
+    @CollectionTable(name = "bill_fees", joinColumns = @JoinColumn(name = "bill_id"))
+    @MapKeyColumn(name = "fee_type")
+    @Column(name = "fee_amount")
+    private Map<String, BigDecimal> fees = new HashMap<>();
+
+    public void setBillFees(Map<String, BigDecimal> fees) {
+    }
+
+    private Boolean isPaid;
+
+
+
+    public boolean billPaid() {
+        if (getPaidDate() != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

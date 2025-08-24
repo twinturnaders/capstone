@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface UserBillRepository extends JpaRepository<UserBill, Long> {
     List<UserBill> findByUserId(Long id);
+
+
 }

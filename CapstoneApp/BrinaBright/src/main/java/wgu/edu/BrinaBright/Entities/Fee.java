@@ -40,4 +40,5 @@ public class Fee {
 
     @Column(name = "end_date")
     private LocalDate effectiveEnd;
+
 }
