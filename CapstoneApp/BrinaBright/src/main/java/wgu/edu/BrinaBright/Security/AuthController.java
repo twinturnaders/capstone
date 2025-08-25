@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import wgu.edu.BrinaBright.Entities.Municipality;
 import wgu.edu.BrinaBright.Entities.User;
 import wgu.edu.BrinaBright.Entities.UserBill;
+import wgu.edu.BrinaBright.Enums.Role;
 import wgu.edu.BrinaBright.Repos.MunicipalityRepository;
 import wgu.edu.BrinaBright.Repos.UserBillRepository;
 import wgu.edu.BrinaBright.Repos.UserRepository;
@@ -49,7 +50,8 @@ public class AuthController {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setMunicipalityId(muni.getId());
+        user.setMunicipality(muni);
+        user.setRole(Role.USER);
 
         userRepository.save(user);
         return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful");

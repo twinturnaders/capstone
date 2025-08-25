@@ -3,9 +3,8 @@ package wgu.edu.BrinaBright.Entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import wgu.edu.BrinaBright.Enums.Role;
 
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +15,6 @@ public class User {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "municipality_id")
-    private Long municipalityId;
 
     @Column(unique = true, name = "email")
     private String email;
@@ -30,5 +27,22 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @OrderBy("billDate DESC")
     private List<UserBill> bills = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    private List<CrowdSubmission> crowdSubmissions = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "municipality_id", nullable = false)
+    private Municipality municipality;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
+    public Long getMunicipalityId() {
+        return this.municipality != null ? this.municipality.getId() : null;
+    }
+
+
 }
 
