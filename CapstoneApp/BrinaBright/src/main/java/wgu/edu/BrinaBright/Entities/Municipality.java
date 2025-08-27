@@ -33,6 +33,9 @@ public class Municipality {
     @Column(name = "geo_bounds")
     private Geometry geoBounds;
 
+    @Column(name = "confidence_rating")
+    private String confidenceRating;
+
     @OneToMany(mappedBy = "municipality", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @OrderBy("effectiveStart ASC")
     private List<WaterRate> waterRates = new ArrayList<>();

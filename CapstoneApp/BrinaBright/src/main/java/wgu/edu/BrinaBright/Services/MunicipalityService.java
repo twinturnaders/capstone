@@ -12,6 +12,8 @@ import wgu.edu.BrinaBright.Repos.MunicipalityRepository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 @RequiredArgsConstructor
 public class MunicipalityService {
@@ -93,6 +95,9 @@ public class MunicipalityService {
                 ? rateCalculatorService.calculateSewerCharge(m, usageGal)
                 : null;
 
+        BigDecimal estTotal = (estWater != null || estSewer != null)
+                ? estSewer.add(estWater)
+                : null;
         return RateSummaryDTO.builder()
                 .name(m.getName())
                 .county(m.getCounty())
@@ -106,7 +111,9 @@ public class MunicipalityService {
                 .baseFees(fees)
                 .estimatedWaterCharge(estWater)
                 .estimatedSewerCharge(estSewer)
+                .confidenceRating(m.getConfidenceRating() == null ? 0 : m.getConfidenceRating().trim().length())
                 .build();
+
 
 
     }

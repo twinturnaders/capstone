@@ -38,8 +38,10 @@ public class CrowdSubmission {
     @Column(name = "town_name")
     private String townName;
 
-    @Column(name = "rate_type")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rate_type", nullable = false)
     private RateType rateType;
+
 
     @Column(name = "fixed_rate")
     private Boolean fixedRate;

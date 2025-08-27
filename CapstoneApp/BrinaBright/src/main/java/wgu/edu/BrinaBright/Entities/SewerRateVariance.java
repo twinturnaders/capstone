@@ -4,6 +4,7 @@ package wgu.edu.BrinaBright.Entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import wgu.edu.BrinaBright.Enums.MeasureUnit;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,6 +28,9 @@ public class SewerRateVariance {
     @Column(name = "created_at")
     private LocalDate effectiveStart;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "measure_unit")
+    private MeasureUnit measureUnit;
 
     @Column(name = "end_date")
     private LocalDate effectiveEnd;

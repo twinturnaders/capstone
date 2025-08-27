@@ -3,6 +3,7 @@ package wgu.edu.BrinaBright.Entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import wgu.edu.BrinaBright.Enums.MeasureUnit;
 
 
 import java.math.BigDecimal;
@@ -32,9 +33,6 @@ public class RateVariance {
     @Column(name = "wrange_max")
     private Integer waterRangeMax;
 
-    @Column(name = "sewer_ppu")
-    private BigDecimal sewerPPU;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "municipality_id", nullable = false)
     private Municipality municipality;
@@ -51,6 +49,9 @@ public class RateVariance {
     @Column(name = "priority")
     private Integer priority;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "measure_unit")
+    private MeasureUnit measureUnit;
 
 
 
