@@ -125,7 +125,7 @@ export class AddBillComponent {
       sewerUsage: raw.sewerUsage ?? undefined,
       waterCharge: raw.waterCharge ?? undefined,
       sewerCharge: raw.sewerCharge ?? undefined,
-      fees: feesMap
+      fees: Object.keys(feesMap).length ? feesMap : undefined
     };
 
     this.submitting = true;
