@@ -28,8 +28,6 @@ public class User {
     @OrderBy("billDate DESC")
     private List<UserBill> bills = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<CrowdSubmission> crowdSubmissions = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "municipality_id", nullable = false)

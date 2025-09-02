@@ -14,7 +14,8 @@ import {StarRatingComponent} from '../../shared/rating/rating.component';
     NgForOf,
     NgIf
   ],
-  styleUrls: ['./search.component.css']
+  styleUrls: ['./search.component.css'],
+  standalone: true,
 })
 export class SearchComponent implements OnInit {
   loading = false;

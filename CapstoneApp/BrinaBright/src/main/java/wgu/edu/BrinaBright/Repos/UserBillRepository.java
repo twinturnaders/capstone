@@ -1,5 +1,6 @@
 package wgu.edu.BrinaBright.Repos;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,16 +12,14 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserBillRepository extends JpaRepository<UserBill, Long> {
-
+    // Eagerly load the element collection to avoid LazyInitialization issues
+    @EntityGraph(attributePaths = "fees")
     List<UserBill> findByUserIdOrderByBillDateDesc(Long userId);
-    List<UserBillDTO> findByUserId(Long id);
 
+    // (optional for single view)
+    @EntityGraph(attributePaths = "fees")
+    java.util.Optional<UserBill> findByIdAndUserId(Long id, Long userId);
 
-    Optional<Object> findByIdAndUserId(Long billId, Long userId);
-
-    Long id(Long id);
-
-    List<UserBillDTO> findByUser(User user);
 }
     
 

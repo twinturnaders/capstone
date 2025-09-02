@@ -25,9 +25,7 @@ public class CrowdSubmission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+
 
     // FILE upload fields
     @Column(name = "original_file_name")
@@ -77,9 +75,5 @@ public class CrowdSubmission {
     private List<CrowdRate> rateTiers = new ArrayList<>();
 
 
-    public void setSubmittedByUserId(Long userId) {
-        if (userId != null){
-    user.setId(userId);}
 
-    }
 }

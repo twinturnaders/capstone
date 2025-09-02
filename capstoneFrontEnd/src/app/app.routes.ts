@@ -11,12 +11,13 @@ import { AdminHomeComponent } from './admin/admin-home/admin-home.component';
 import { AdminApprovalComponent } from './admin/admin-approval/admin-approval.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import {AddBillComponent} from './user/user-account/add-bill/add-bill.component';
+import {CompareComponent} from './user/user-account/compare/compare.component';
 
 export const routes: Routes = [
   { path: '', component: AppHomeComponent },
   { path: 'compare', component: SearchComponent },
   { path: 'login', component: LoginComponent },
-  { path: '', canActivate: [landingRedirectGuard], pathMatch: 'full', component: LoginComponent },
+  { path: '', canActivate: [landingRedirectGuard], pathMatch: 'full', component: AccountEditComponent },
 
 
   { path: 'login', component: LoginComponent },
@@ -35,8 +36,9 @@ export const routes: Routes = [
         component: UserBillsComponent, children: [{path:'add-bill', component: AddBillComponent}]},
 
 
+      { path: 'compare', component: CompareComponent },
       { path: 'crowdsource', component: RateInputComponent },
-      { path: 'compare', component: SearchComponent },
+
     ]
   },
 
@@ -51,5 +53,5 @@ export const routes: Routes = [
     ]
   },
 
-  { path: '**', redirectTo: '' }
+
 ];

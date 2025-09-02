@@ -1,12 +1,9 @@
 package wgu.edu.BrinaBright.DTOs;
 
 import lombok.*;
-import wgu.edu.BrinaBright.Entities.BillFee;
-import wgu.edu.BrinaBright.Entities.UserBill;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +35,7 @@ public class UserBillDTO {
 
 
 
-    private List<BillFeeDTO> fees;
+    private Map<String, BigDecimal> fees;
 
 
 

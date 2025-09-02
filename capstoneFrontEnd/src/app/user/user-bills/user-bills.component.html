@@ -1,5 +1,9 @@
+
+
 <section class="card">
+  <router-outlet/>
   <div class="header-row">
+
     <h2 class="card-title">Your Bills</h2>
 
     <button routerLink="/user-account/bills/add-bill" class="cta-button">Add Bill</button>
@@ -25,28 +29,36 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let b of bills" >
-        <td *ngIf="b && hasData(b)">{{ b.billDate | date:'MMM d, y' }}</td>
-        <td *ngIf="b && hasData(b)">{{ b.dueDate | date: 'MMM d, y'}}</td>
-        <td *ngIf="b && hasData(b)"><input type="checkbox" [checked]="b.paid" [disabled]="!b.paid" /></td>
+      <tr *ngFor="let b of bills">
+        <td>{{ b.billDate | date:'MMM d, y' }}</td>
+        <td>{{ b.dueDate | date: 'MMM d, y' }}</td>
+        <td><input type="checkbox" [checked]="b.paid" /></td>
+        <td>{{ b.waterUsage }}</td>
+        <td>{{ b.sewerUsage }}</td>
+        <td>{{ b.waterCharge | currency }}</td>
+        <td>{{ b.sewerCharge | currency }}</td>
+        <td>
+          <ng-container *ngIf="b.fees && (objectKeys(b.fees).length); else noFees">
+            <ul>
+              <li *ngFor="let fee of (b.fees | keyvalue)">
+                {{ fee.key }}: {{ fee.value | currency }}
+              </li>
+            </ul>
+          </ng-container>
+          <ng-template #noFees>
 
-        <td *ngIf="b && hasData(b)">{{ b.waterUsage }}</td>
-        <td *ngIf="b && hasData(b)">{{ b.sewerUsage}}</td>
-        <td *ngIf="b && hasData(b)">{{ b.waterCharge | currency }}</td>
-        <td *ngIf="b && hasData(b)">{{ b.sewerCharge | currency }}</td>
-        <td *ngIf="b && hasData(b)">{{ b.fees }}</td>
-        <td class="actions-cell">
-          <button class="btn" (click)="viewBill(b)">View</button>
+            <span class="muted">—</span>
+          </ng-template>
         </td>
+
+        <!-- Total -->
+        <td>{{ TotalCharge(b) | currency }}</td>
+
       </tr>
       </tbody>
     </table>
   </div>
 
-  <div *ngIf="loading" class="skeleton">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-  </div>
+
 </section>
-<router-outlet/>
+

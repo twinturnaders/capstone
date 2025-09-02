@@ -12,7 +12,7 @@ export interface BillFeeDTO {
 }
 
 export interface CreateBillRequest {
-  billDate?: string;        // ISO yyyy-MM-dd
+  billDate?: string;
   dueDate?: string;
   paidDate?: string;
   paid?: boolean;
@@ -20,7 +20,7 @@ export interface CreateBillRequest {
   sewerUsage?: number;
   waterCharge?: number;
   sewerCharge?: number;
-  fees?: BillFeeDTO;
+  fees?: Record<string, number>;
 }
 
 type FeeForm = FormGroup<{
@@ -99,24 +99,30 @@ export class AddBillComponent {
 
   submit(): void {
     this.error = null;
-    this.success = null;
 
+    if (this.form.valid) {
+      this.success = 'Bill added successfully.';
+    }
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.error = 'Please fix the highlighted fields.';
       this.cdr.markForCheck();
-      return;
+
     }
 
+
     const raw = this.form.getRawValue();
-    const feesMap = (raw.fees || [])
+
+    const feesMap: Record<string, number> = (raw.fees || [])
       .filter(f => (f?.name ?? '').trim().length > 0)
       .reduce<Record<string, number>>((acc, f) => {
-        acc[(f.name ?? '').trim()] = Number(f.amount ?? 0);
+        const key = (f.name ?? '').trim();
+        const amt = Number(f.amount);
+        if (key) acc[key] = Number.isFinite(amt) ? amt : 0;
         return acc;
       }, {});
 
-    const req = {
+    const req: CreateBillRequest = {
       billDate: raw.billDate || undefined,
       dueDate: raw.dueDate || undefined,
       paidDate: raw.paidDate || undefined,
@@ -137,7 +143,7 @@ export class AddBillComponent {
         next: () => {
           this.success = 'Bill saved';
 
-          setTimeout(() => this.router.navigate(['../']), 400);
+        this.form.reset();
 
         },
         error: (err) => {
@@ -162,4 +168,6 @@ export class AddBillComponent {
       return Number.isFinite(n) ? n : 0;
     }
   }
+
+
 }

@@ -1,10 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { finalize } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {finalize} from 'rxjs/operators';
+import {environment} from '../../../environments/environment';
 import {CommonModule} from '@angular/common';
-import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {MatCheckbox} from '@angular/material/checkbox';
+import {RouterLink, RouterOutlet} from '@angular/router';
 
 export interface BillFeeDTO {
   name?: string;
@@ -23,7 +22,7 @@ export interface UserBillDTO {
   sewerUsage?: number;
   waterCharge?: number;
   sewerCharge?: number;
-  fees?: BillFeeDTO[];
+  fees?: Record<any, any>;
 
 
 }
@@ -46,9 +45,11 @@ export interface BillCompareResult {
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [CommonModule, RouterLink, RouterOutlet]})
+
 export class UserBillsComponent implements OnInit {
 
   private base = `${environment.apiUrl}/api/userbills`;
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   bills: UserBillDTO[] = [];
   loading = false;
@@ -61,22 +62,27 @@ export class UserBillsComponent implements OnInit {
   compareLoading = false;
   compareError: string | null = null;
 
-  constructor(private http: HttpClient) {}
+
 
   ngOnInit(): void {
     this.loadBills();
   }
+  objectKeys = Object.keys;
+  private none: string = '';
+
 
   loadBills(): void {
     this.loading = true;
     this.error = null;
 
     this.http.get<UserBillDTO[]>(this.base)
-      .pipe(finalize(() => this.loading = false))
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.cdr.markForCheck();  // <-- manually trigger view update
+      }))
       .subscribe({
         next: (rows) => {
-          // normalize for UI (usage/amount/unit/municipalityName)
-          this.bills = (rows || []).map(b => this.normalizeBill(b));
+          this.bills = (rows || []);
         },
         error: (err) => {
           console.error('Failed to load bills', err);
@@ -84,6 +90,27 @@ export class UserBillsComponent implements OnInit {
         }
       });
   }
+  feesAsArray(b: UserBillDTO): { name: string; amount: number }[] {
+    return Object.entries(b.fees ?? {}).map(([name, amount]) => ({
+      name,
+      amount: this.toNumber(amount),
+    }));
+  }
+
+
+ifNull(b: UserBillDTO): string | null{
+    if (b.fees == null){
+      return 'None'
+    }
+
+    else {
+      return null
+    }
+
+
+
+}
+
 
   // saveNewBill(req: CreateBillRequest): void {
   //   this.error = null;
@@ -134,34 +161,61 @@ export class UserBillsComponent implements OnInit {
 
   }
 
+  private sumFees(map?: Record<string, number>): number {
+    return Object.values(map ?? {}).reduce((sum, v) => sum + this.toNumber(v), 0);
+  }
+
+  TotalCharge(bill: UserBillDTO): number {
+    const water = this.toNumber(bill.waterCharge);
+    const sewer = this.toNumber(bill.sewerCharge);
+    const feesTotal = this.sumFees(bill.fees);
+    return water + sewer + feesTotal;
+  }
+  id?: number;
+  billDate?: string;
+  dueDate?: string;
+  paidDate?: string;
+  paid?: boolean;
   private normalizeBill(b: UserBillDTO): {
-    id?: number;
-    billDate?: string;
-    dueDate?: string;
-    paidDate?: string;
-    paid?: boolean;
-    waterUsage?: number;
-    sewerUsage?: number;
-    waterCharge?: number;
-    sewerCharge?: number;
-    fees?: BillFeeDTO[];
-
+    bd: string;
+    dueDate: string;
+    paid: boolean;
+    water: number;
+    sewer: number;
+    feesTotal: number;
+    waterAmount: number;
+    sewerAmount: number;
+    feeMap: Record<any, any> | null;
+    unit: string
   } {
-    const water = this.toNumber(b.waterCharge);
-    const sewer = this.toNumber(b.sewerCharge);
-    const feesTotal = (b.fees || []).reduce((sum, f) => sum + this.toNumber(f.amount), 0);
-
-
-
+    const bd = b.billDate == null || b.billDate.length == 0 ? '-' : b.billDate;
+    const  dueDate = b.dueDate == null || b.dueDate.toString().length == 0 ? '-' : b.dueDate;
+    const water = b.waterCharge == null || b.waterCharge.toString().length == 0 ?  0 : this.toNumber(b.waterCharge);
+    const sewer = b.sewerCharge == null || b.sewerCharge.toString().length == 0 ?  0 : this.toNumber(b.sewerCharge);
+    const feesTotal = b.fees == null || b.fees.toString().length == 0 ?  0 : this.sumFees(b.fees);
+    const waterAmount = b.waterUsage == null || b.waterUsage.toString().length == 0 ? 0 : this.toNumber(b.waterUsage);
+    const sewerAmount: number = b.sewerUsage == null || b.sewerUsage.toString().length == 0 ? 0 : this.toNumber(b.sewerUsage);
+    const paid: boolean = b.paid != null ? b.paid : false;
+    const feeMap = b.fees != null ? b.fees : null;
 
 
 
     return {
-      ...b,
-
-
+      bd,
+      dueDate,
+      paid,
+      water,
+      sewer,
+      feesTotal,
+      waterAmount,
+      sewerAmount,
+      feeMap,
+      unit: 'kgal',
     };
   }
+
+
+
 
   private toNumber(v: any): number {
     if (v == null) return 0;
@@ -169,4 +223,7 @@ export class UserBillsComponent implements OnInit {
     const n = Number(v);
     return Number.isFinite(n) ? n : 0;
   }
+
+
+
 }

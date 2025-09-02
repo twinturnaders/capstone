@@ -22,9 +22,8 @@ public class CrowdSubmissionService {
     private final CrowdSubmissionRepository submissions;
 
     @Transactional
-    public void saveStructuredSubmission(Long userId, CrowdSubmissionDTO dto) {
+    public void saveStructuredSubmission(CrowdSubmissionDTO dto) {
         CrowdSubmission s = new CrowdSubmission();
-        if (userId != null) {s.setSubmittedByUserId(userId);}
         if (dto.getTownName() != null) {s.setTownName(dto.getTownName());}
         if (dto.getBaseRate() != null) {s.setRateType(dto.getRateType());}
         if (dto.getTownName() != null){s.setBaseRate(dto.getBaseRate());}

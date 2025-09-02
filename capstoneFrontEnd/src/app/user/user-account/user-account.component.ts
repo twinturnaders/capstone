@@ -4,6 +4,8 @@ import { UserService } from '../../shared/services/user.service';
 import { UserDTO } from '../user.dto';
 import {CommonModule, NgIf} from '@angular/common';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
+import {UserBillsComponent} from '../user-bills/user-bills.component';
+import {AccountEditComponent} from '../account-edit/account-edit.component';
 
 export interface UpdateAccountRequest {
   displayName?: string;
@@ -24,9 +26,8 @@ type AccountForm = FormGroup<{
   imports: [
     ReactiveFormsModule,
     CommonModule,
-
-    RouterLink,
     RouterLinkActive,
+    RouterLink,
     RouterOutlet
   ],
   changeDetection: ChangeDetectionStrategy.OnPush

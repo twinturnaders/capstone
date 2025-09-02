@@ -66,8 +66,7 @@ public class UserBill {
     @Column(name = "fee_amount")
     private Map<String, BigDecimal> fees = new HashMap<>();
 
-    public void setBillFees(List<BillFeeDTO> fees) {
-    }
+
 
     private Boolean isPaid;
 
