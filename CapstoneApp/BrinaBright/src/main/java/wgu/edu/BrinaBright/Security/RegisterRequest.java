@@ -12,4 +12,5 @@ public class RegisterRequest {
     public String email;
     public String password;
     public String zipCode;
+    public Long municipalityId;
 }

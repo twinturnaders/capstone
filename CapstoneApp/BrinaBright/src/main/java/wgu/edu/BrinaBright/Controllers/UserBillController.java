@@ -1,25 +1,32 @@
 package wgu.edu.BrinaBright.Controllers;
 
+import io.jsonwebtoken.Jwt;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import wgu.edu.BrinaBright.DTOs.UserBillDTO;
-import wgu.edu.BrinaBright.Entities.Municipality;
+import wgu.edu.BrinaBright.DTOs.ViewBillDTO;
 import wgu.edu.BrinaBright.Entities.User;
 import wgu.edu.BrinaBright.Entities.UserBill;
 import wgu.edu.BrinaBright.Repos.FeeRepository;
 import wgu.edu.BrinaBright.Repos.MunicipalityRepository;
 import wgu.edu.BrinaBright.Repos.UserBillRepository;
 import wgu.edu.BrinaBright.Repos.UserRepository;
+import wgu.edu.BrinaBright.Security.CurrentUser;
+import wgu.edu.BrinaBright.Security.JwtTokenProvider;
+import wgu.edu.BrinaBright.Security.UserPrincipal;
 import wgu.edu.BrinaBright.Services.RateCalculatorService;
+import wgu.edu.BrinaBright.Services.UserService;
+import wgu.edu.BrinaBright.Services.ViewBillService;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/userbills")
@@ -30,80 +37,70 @@ public class UserBillController {
     private final UserBillRepository userBillRepository;
     private final FeeRepository feeRepository;
     private final RateCalculatorService rateCalculatorService;
+    private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
     private MunicipalityRepository municipalityRepository;
+    private final ViewBillService viewBillService;
 
+
+
+        @GetMapping
+        @PreAuthorize("isAuthenticated()")
+
+        public ResponseEntity<List<UserBillDTO>> list(@CurrentUser User user) {
+            List<UserBillDTO> rows = viewBillService.getUserBillsForUser(user.getId());
+            return ResponseEntity.ok(rows);
+        }
+
+
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ResponseEntity<?> saveUserBill(@RequestBody UserBillDTO dto) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email);
+    public ResponseEntity<?> saveUserBill(@CurrentUser User user, @RequestBody UserBillDTO dto) {
 
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+
+        {
+
+
+            UserBill bill = new UserBill();
+
+
+            bill.setUser(user);
+
+
+            if (dto.getWaterUsage() != null) {
+                bill.setWaterUsage(dto.getWaterUsage());
+            }
+            if (dto.getSewerUsage() != null) {
+                bill.setSewerUsage(dto.getSewerUsage());
+            }
+
+            if (dto.getWaterCharge() != null) {
+                bill.setWaterCharge(dto.getWaterCharge());
+            }
+            if (dto.getSewerCharge() != null) {
+                bill.setSewerCharge(dto.getSewerCharge());
+            }
+
+            bill.setBillDate(dto.getBillDate() != null ? dto.getBillDate() : LocalDate.now());
+
+            if (bill.getBillDate() != null) {
+                bill.setDueDate(dto.getDueDate());
+            }
+
+            if (bill.getDueDate() != null) {
+                bill.setPaidDate(dto.getPaidDate());
+            }
+
+            bill.setPaid(Boolean.TRUE.equals(dto.getPaid()));
+
+            if (dto.getFees() != null) {
+                bill.setBillFees(dto.getFees());
+            }
+
+
+            userBillRepository.save(bill);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Bill saved", "id", bill.getId()));
         }
-
-        UserBill bill = new UserBill();
-        bill.setUser(user);
-        bill.setWaterUsage(BigDecimal.valueOf(dto.getWaterUsage()));
-        bill.setSewerUsage(BigDecimal.valueOf(dto.getSewerUsage()));
-        bill.setWaterCharge(dto.getWaterCharge());
-        bill.setSewerCharge(dto.getSewerCharge());
-        bill.setBillDate(dto.getBillDate() != null ? dto.getBillDate() : LocalDate.now());
-        bill.setDueDate(dto.getDueDate());
-        bill.setPaidDate(dto.getPaidDate());
-        bill.setPaid(dto.isPaid());
-        bill.setBillFees(dto.getFees());
-
-        userBillRepository.save(bill);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Bill saved");
-    }
-
-    @GetMapping
-    public ResponseEntity<List<UserBillDTO>> getUserBills() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email);
-
-        List<UserBillDTO> result = userBillRepository.findByUserId(user.getId())
-                .stream()
-                .map(UserBillDTO::fromEntity)
-                .toList();
-
-        return ResponseEntity.ok(result);
-    }
-
-    @GetMapping("/compare")
-    public ResponseEntity<?> compareUserBillToNearby(@RequestParam Integer waterUsage, @RequestParam Integer sewerUsage) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByEmail(email);
-
-        Long home = user.getMunicipalityId();
-        if (home == null) {
-            return ResponseEntity.badRequest().body("No municipality set for user.");
-        }
-
-        Municipality municipality = municipalityRepository.findById(home).get();
-
-        List<Municipality> nearby = municipalityRepository.findMunicipalitiesNearZip(String.valueOf(municipality.getZipCenter()), 96560.0); // 60 miles in meters
-
-        List<Map<String, Object>> results = new ArrayList<>();
-
-        RateCalculatorService rateCalculatorService = new RateCalculatorService();
-
-        for (Municipality m : nearby) {
-            BigDecimal estWater = rateCalculatorService.calculateWaterCharge(m, waterUsage);
-            BigDecimal estSewer = rateCalculatorService.calculateSewerCharge(m, sewerUsage);
-
-            Map<String, Object> entry = Map.of(
-                    "municipality", m.getName(),
-                    "state", m.getState(),
-                    "county", m.getCounty(),
-                    "estimatedWaterCharge", estWater,
-                    "estimatedSewerCharge", estSewer,
-                    "total", estWater.add(estSewer)
-            );
-
-            results.add(entry);
-        }
-
-        return ResponseEntity.ok(results);
     }
 }

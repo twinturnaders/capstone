@@ -35,6 +35,10 @@ public class User {
     @JoinColumn(name = "municipality_id", nullable = false)
     private Municipality municipality;
 
+    public String getStringRole() {
+        return role.toString();
+    }
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;

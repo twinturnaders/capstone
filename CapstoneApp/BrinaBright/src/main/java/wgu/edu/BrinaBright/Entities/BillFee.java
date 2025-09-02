@@ -27,4 +27,6 @@ public class BillFee {
     @Column(name = "fee_amount")
     private BigDecimal feeAmount;
 
+
+
 }

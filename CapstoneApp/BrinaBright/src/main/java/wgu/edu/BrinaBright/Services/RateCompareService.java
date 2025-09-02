@@ -18,8 +18,8 @@ public class RateCompareService {
     public List<NearbyCostDTO> getNearbyCostEstimates(String zip, int usageGal, double radiusMeters) {
         List<Object[]> results = municipalityRepository.findMunicipalityIdsAndDistance(zip, radiusMeters);
 
-        return results.stream().map(row -> {
-            Long muniId = ((Number) row[0]).longValue();
+            return results.stream().map(row -> {
+                Long muniId = ((Number) row[0]).longValue();
             double distanceMeters = ((Number) row[1]).doubleValue();
             double distanceMiles = distanceMeters / 1609;
 

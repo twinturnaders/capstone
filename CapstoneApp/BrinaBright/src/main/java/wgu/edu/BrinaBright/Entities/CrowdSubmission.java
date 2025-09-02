@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import wgu.edu.BrinaBright.Enums.RateType;
+import wgu.edu.BrinaBright.Enums.SubmissionStatus;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,7 +52,7 @@ public class CrowdSubmission {
     private BigDecimal baseRate;
 
     @Column(name = "created_at")
-    private LocalDate createDate;    // e.g., bill date
+    private LocalDate createdAt;    // e.g., bill date
 
 
     @Column(name = "notes")
@@ -59,15 +61,25 @@ public class CrowdSubmission {
     @Column(name = "submission_file_uploaded")
     private boolean submittedViaUpload;
 
-    @Column(name = "admin_verified")
-    private boolean adminVerified;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "submission_status")
+    private SubmissionStatus status;
+
+    private Long resolvedMunicipalityId;
+
+
+    private Instant updatedAt = Instant.now();
 
     @OneToMany(mappedBy = "submission", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<CrowdFee> crowdFees = new ArrayList<>();
+    private List<CrowdFee> fees = new ArrayList<>();
 
     @OneToMany(mappedBy = "submission", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    private List<CrowdRateTier> crowdRates = new ArrayList<>();
+    private List<CrowdRate> rateTiers = new ArrayList<>();
 
 
+    public void setSubmittedByUserId(Long userId) {
+        if (userId != null){
+    user.setId(userId);}
 
+    }
 }

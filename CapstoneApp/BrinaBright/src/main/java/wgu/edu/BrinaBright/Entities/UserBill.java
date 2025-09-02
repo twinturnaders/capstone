@@ -3,11 +3,11 @@ package wgu.edu.BrinaBright.Entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import wgu.edu.BrinaBright.DTOs.BillFeeDTO;
 
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +66,7 @@ public class UserBill {
     @Column(name = "fee_amount")
     private Map<String, BigDecimal> fees = new HashMap<>();
 
-    public void setBillFees(Map<String, BigDecimal> fees) {
+    public void setBillFees(List<BillFeeDTO> fees) {
     }
 
     private Boolean isPaid;

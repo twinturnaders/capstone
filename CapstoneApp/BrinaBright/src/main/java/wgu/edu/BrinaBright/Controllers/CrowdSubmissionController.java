@@ -3,10 +3,7 @@ package wgu.edu.BrinaBright.Controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import wgu.edu.BrinaBright.DTOs.CrowdSubmissionDTO;
 import wgu.edu.BrinaBright.Security.UserPrincipal;
 import wgu.edu.BrinaBright.Services.CrowdSubmissionService;
@@ -20,11 +17,11 @@ public class CrowdSubmissionController {
 
     @PostMapping("/submit")
     public ResponseEntity<?> submitStructuredData(
-            @AuthenticationPrincipal UserPrincipal user,
+            @AuthenticationPrincipal UserPrincipal user, // may be null for anonymous
             @RequestBody CrowdSubmissionDTO dto
     ) {
-        crowdSubmissionService.saveStructuredSubmission(user.getId(), dto);
+        Long userId = (user != null) ? user.getId() : null; // store null for anonymous
+        crowdSubmissionService.saveStructuredSubmission(userId, dto);
         return ResponseEntity.ok("Submission received!");
     }
 }
-

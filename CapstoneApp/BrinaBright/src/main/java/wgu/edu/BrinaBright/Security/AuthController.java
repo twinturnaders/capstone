@@ -1,21 +1,18 @@
 package wgu.edu.BrinaBright.Security;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import wgu.edu.BrinaBright.Entities.Municipality;
 import wgu.edu.BrinaBright.Entities.User;
-import wgu.edu.BrinaBright.Entities.UserBill;
 import wgu.edu.BrinaBright.Enums.Role;
 import wgu.edu.BrinaBright.Repos.MunicipalityRepository;
-import wgu.edu.BrinaBright.Repos.UserBillRepository;
 import wgu.edu.BrinaBright.Repos.UserRepository;
-
-import java.util.List;
-import java.util.Map;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,84 +20,59 @@ import java.util.Map;
 public class AuthController {
 
     private final UserRepository userRepository;
+    private final MunicipalityRepository municipalityRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserBillRepository userBillRepository;
-    private final JwtUtil jwtUtil;
-    private MunicipalityRepository municipalityRepository;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwt;
 
-
-
-    //register with pass encoder
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body("User already exists");
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest req) {
+        if (userRepository.findByEmail(req.getEmail()) != null) {
+            return ResponseEntity.badRequest().build();
         }
 
-        String zip = request.getZipCode();
-        if (zip == null || zip.isBlank()) {
-            return ResponseEntity.badRequest().body("ZIP code is required");
+        Municipality muni = null;
+        if (req.getMunicipalityId() != null) {
+            muni = municipalityRepository.findById(req.getMunicipalityId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid municipalityId"));
+        } else if (req.getZipCode() != null && !req.getZipCode().isBlank()) {
+            var nearest = municipalityRepository.findNearestByZip(req.getZipCode());
+            if (!nearest.isEmpty() && nearest.get(0).getMeters() != null) {
+                double miles = nearest.get(0).getMeters() / 1609.344;
+                if (miles <= 50.0) {
+                    muni = municipalityRepository.findById(nearest.get(0).getId()).orElse(null);
+                }
+            }
         }
 
-        // Prefer containment; fallback to nearest within 60 miles (~96,560 m); final fallback: pure nearest
-        Municipality muni = municipalityRepository.findContainingZip(zip)
-                .or(() -> municipalityRepository.findNearestToZip(zip))
-                .orElseThrow(() -> new RuntimeException("No municipality found near ZIP " + zip));
+        User u = new User();
+        u.setEmail(req.getEmail());
+        u.setPasswordHash(passwordEncoder.encode(req.getPassword()));
+        u.setRole(Role.USER);
+        if (muni != null) u.setMunicipality(muni);
 
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        user.setMunicipality(muni);
-        user.setRole(Role.USER);
+        userRepository.save(u);
 
-        userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Registration successful");
+        String token = jwt.generateToken(UserPrincipal.create(u));
+        return ResponseEntity.ok(AuthResponse.from(u, token));
     }
-
-    //Creates auth token
-
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail());
-        if (user == null || !passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
-        }
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest req) {
 
-        String accessToken = jwtUtil.generateToken(user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
-
-        //all for token refresh
-        return ResponseEntity.ok(Map.of(
-                "accessToken", accessToken,
-                "refreshToken", refreshToken
-        ));
-    }
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+        );
 
 
-    //maps auth to userbills
-    @GetMapping("/userbills")
-    public List<UserBill> getBillsForUser() {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        String email = auth.getName();
         User user = userRepository.findByEmail(email);
-        return userBillRepository.findByUserId(user.getId());
-    }
+        if (user == null) {
 
-    //refresh endpoint
-    //May choose to store refresh tokens in database in the future
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
-
-        if (!jwtUtil.validateToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
+            return ResponseEntity.badRequest().build();
         }
 
-        String email = jwtUtil.getEmailFromToken(refreshToken);
-        String newAccessToken = jwtUtil.generateToken(email);
-
-        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+        String token = jwt.generateToken(UserPrincipal.create(user));
+        return ResponseEntity.ok(AuthResponse.from(user, token));
     }
-
-
 }

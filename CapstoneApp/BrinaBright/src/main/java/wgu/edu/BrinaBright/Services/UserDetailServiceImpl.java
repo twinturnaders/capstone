@@ -1,7 +1,5 @@
 package wgu.edu.BrinaBright.Services;
 
-
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
@@ -18,15 +16,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found: " + email);
-        }
-        return UserPrincipal.create(user);
+        if (user == null) throw new UsernameNotFoundException("User not found: " + email);
+        return UserPrincipal.create(user); // return your custom principal
     }
+
     public UserDetails loadUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
-
-        return UserPrincipal.create(user);
+        return UserPrincipal.create(user); // return your custom principal
     }
 }
