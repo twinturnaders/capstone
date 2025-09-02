@@ -1,0 +1,207 @@
+<section>
+  <header class="header">
+    <h1>Submit Rates</h1>
+    <p class="muted">Share municipal water & sewer rate details to help the community.</p>
+  </header>
+
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <div class="grid">
+
+
+      <div class="field">
+        <mat-checkbox class = "mat-box"
+          formControlName="useOtherTown"
+          (change)="onToggleOtherTown($event.checked)"
+        >
+          Town not listed? Use “Other”
+        </mat-checkbox>
+
+        <!-- List path -->
+        <ng-container  *ngIf="!form.get('useOtherTown')?.value">
+          <ng-container *ngIf="allTowns$ | async as towns">
+            <mat-form-field class="w-full">
+              <mat-label>Town</mat-label>
+
+              <input
+                matInput
+                type="text"
+                [formControl]="townCtrl"
+                [matAutocomplete]="auto"
+                placeholder="Start typing a town name"
+                autocomplete="off"
+                (input)="syncTypedTownToId(towns)"
+                (blur)="syncTypedTownToId(towns)"
+                aria-autocomplete="list"
+              />
+
+              <mat-autocomplete
+                #auto="matAutocomplete"
+                autoActiveFirstOption
+                (optionSelected)="onTownPicked($event, towns)"
+              >
+                <mat-option *ngFor="let t of (filteredTowns$ | async)!" [value]="t.name" style="background-color: #f0f8ff">
+                  {{ t.name }}
+                </mat-option>
+              </mat-autocomplete>
+
+              <mat-hint>Case-insensitive search</mat-hint>
+              <mat-error *ngIf="form.errors?.['townFromListRequired'] && (form.touched || form.dirty)">
+                Please select a town from the list.
+              </mat-error>
+            </mat-form-field>
+          </ng-container>
+        </ng-container>
+
+
+        <ng-container *ngIf="form.get('useOtherTown')?.value">
+          <mat-form-field appearance="outline" class="w-full">
+            <mat-label>Other town name</mat-label>
+            <input
+              matInput
+              type="text"
+              formControlName="otherTownName"
+              placeholder="e.g., Unincorporated Area near XYZ"
+            />
+            <mat-hint>Enter at least 2 characters.</mat-hint>
+            <mat-error *ngIf="form.errors?.['otherTownRequired'] && (form.touched || form.dirty)">
+              Please enter the town name.
+            </mat-error>
+          </mat-form-field>
+        </ng-container>
+      </div>
+
+      <div class="field">
+        <label for="effectiveDate">Effective date</label>
+        <input id="effectiveDate" type="date" formControlName="effectiveDate" />
+      </div>
+
+      <div class="field">
+        <label for="sourceType">Source type</label>
+        <select id="sourceType" formControlName="sourceType">
+          <option value="BILL">Bill</option>
+          <option value="WEBSITE">Website</option>
+          <option value="PHONE">Phone</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="sourceUrl">Source URL</label>
+        <input id="sourceUrl" type="url" formControlName="sourceUrl" placeholder="https://example.gov/rates" />
+        <small class="error" *ngIf="form.get('sourceUrl')?.errors?.['url']">
+          Must start with http(s)://
+        </small>
+      </div>
+    </div>
+
+    <section class="section">
+      <h2>Water</h2>
+      <div class="grid">
+        <div class="field" [formGroup]="form.controls.water">
+          <label for="waterBase">Water Base Charge</label>
+          <input id="waterBase" type="number" formControlName="base" step="0.01" />
+
+          <small>*If Water Rate is Fixed, no further information on Water Rate is required</small>
+        </div>
+      </div>
+
+      <div class="tiers">
+        <div class="tiers-head">
+          <h3>Water Rate By Consumption</h3>
+          <button type="button" class="btn" (click)="addWaterTier()">Add tier</button>
+          <small>
+            <strong>Example 1:</strong><br>
+            Tier 1: $2/KGal for usage up to 10,000gal <br>
+            Tier 2: $3/KGal with no upper limit
+            <br><br><strong>Example 2:</strong><br>
+            $3/KGal No upper limit (does not vary based on increasing usage)
+          </small>
+        </div>
+
+        <div class="tier-row" *ngFor="let t of waterTiers.controls; let i = index" [formGroup]="t">
+          <div class="field">
+            <label>Up to (units)</label>
+            <input type="number" formControlName="upTo" />
+            <small class="hint">Leave blank for “no upper limit”.</small>
+          </div>
+          <div class="field">
+            <label>Rate per unit</label>
+            <input type="number" step="0.01" formControlName="rate" />
+
+          </div>
+          <div class="row-actions">
+            <button type="button" class="btn danger" (click)="removeWaterTier(i)" *ngIf="waterTiers.length > 1">Remove</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEWER -->
+    <section class="section">
+      <h2>Sewer</h2>
+      <div class="grid">
+        <div class="field" [formGroup]="form.controls.sewer">
+          <label for="sewerBase">Base charge</label>
+          <input id="sewerBase" type="number" formControlName="base" step="0.01" />
+
+          <small>*If Sewer Rate is Fixed, no further information on Sewer Rate is required</small>
+        </div>
+      </div>
+
+      <div class="tiers">
+        <div class="tiers-head">
+          <h3>Sewer Rate By Consumption</h3>
+          <button type="button" class="btn" (click)="addSewerTier()">Add tier</button>
+          <small>
+            <strong>Example 1:</strong><br>
+            Tier 1: $2/KGal for usage up to 10,000gal <br>
+            Tier 2: $3/KGal with no upper limit
+            <br><br><strong>Example 2:</strong><br>
+            $3/KGal No upper limit (does not vary based on increasing usage)
+          </small>
+        </div>
+
+        <div class="tier-row" *ngFor="let t of sewerTiers.controls; let i = index" [formGroup]="t">
+          <div class="field">
+            <label>Up to (units)</label>
+            <input type="number" formControlName="upTo" />
+            <small class="hint">Leave blank for “no upper limit”.</small>
+          </div>
+          <div class="field">
+            <label>Rate per unit</label>
+            <input type="number" step="0.01" formControlName="rate" />
+
+          </div>
+          <div class="row-actions">
+            <button type="button" class="btn danger" (click)="removeSewerTier(i)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="field">
+      <label for="notes">Notes</label>
+      <textarea id="notes" rows="3" formControlName="notes" placeholder="Please enter any additional fees and/or any notes on how these rates apply..."></textarea>
+    </div>
+
+    <div class="messages">
+      <p class="success" *ngIf="success">{{ success }}</p>
+      <p class="error" *ngIf="error">{{ error }}</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" type="submit" [disabled]="submitting || form.invalid">
+        <span *ngIf="!submitting">Submit rates</span>
+        <span *ngIf="submitting">Submitting…</span>
+      </button>
+    </div>
+  </form>
+
+
+  <details class="preview">
+    <summary>Preview payload</summary>
+    <pre>{{ preview | json }}</pre>
+  </details>
+</section>
+
+
