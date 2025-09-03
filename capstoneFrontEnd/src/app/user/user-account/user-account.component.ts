@@ -4,8 +4,8 @@ import { UserService } from '../../shared/services/user.service';
 import { UserDTO } from '../user.dto';
 import {CommonModule, NgIf} from '@angular/common';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
-import {UserBillsComponent} from '../user-bills/user-bills.component';
-import {AccountEditComponent} from '../account-edit/account-edit.component';
+import {UserBillsComponent} from './user-bills/user-bills.component';
+import {AccountEditComponent} from './account-edit/account-edit.component';
 
 export interface UpdateAccountRequest {
   displayName?: string;
@@ -47,6 +47,8 @@ export class UserAccountComponent implements OnInit {
       displayName: this.fb.nonNullable.control('', []),
       email: this.fb.nonNullable.control('', [Validators.email]),
       password: this.fb.nonNullable.control('', []),
+
+
 
     });
   }
@@ -91,7 +93,7 @@ export class UserAccountComponent implements OnInit {
       next: () => {
         this.saving = false;
         this.message = 'Saved!';
-        this.form.get('password')!.reset(''); // clear password field after save
+        this.form.get('password')!.reset('');
       },
       error: () => {
         this.saving = false;

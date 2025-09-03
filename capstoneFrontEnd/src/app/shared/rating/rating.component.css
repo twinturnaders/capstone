@@ -3,11 +3,13 @@
   gap: 2px;
   line-height: 1;
   user-select: none;
+
 }
 .star {
   font-size: 1.1rem;
-  color: #c9c9c9; /* empty */
+  color: #ffffff;
 }
 .star.filled {
-  color: #f5b301; /* gold */
+  color: #012aa7;
+  accent-color: black !important;
 }

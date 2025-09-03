@@ -1,12 +1,17 @@
-import { Component } from '@angular/core';
-import {SearchComponent} from '../../../view-compare/search/search.component';
+import {Component} from '@angular/core';
+
+import {SearchComponent} from '../../../shared/search/search.component';
+import {CommonModule} from '@angular/common';
 
 @Component({
-  selector: 'app-compare',
-  imports: [SearchComponent],
+  selector: 'app-user-compare',
   templateUrl: './compare.component.html',
-  styleUrl: './compare.component.css',
+  imports: [CommonModule,
+   SearchComponent
+  ],
+  styleUrls: ['./compare.component.css'],
+  standalone: true,
 })
-export class CompareComponent {
+export class CompareComponent  {
 
 }

@@ -1,17 +1,19 @@
 import { Routes } from '@angular/router';
 import {AppHomeComponent, landingRedirectGuard} from './app-home/app-home.component';
-import { SearchComponent } from './view-compare/search/search.component';
+import { SearchComponent } from './shared/search/search.component';
 import { LoginComponent } from './user/login/login.component';
 import { RegisterComponent } from './user/register/register.component';
 import { UserAccountComponent } from './user/user-account/user-account.component';
-import { AccountEditComponent } from './user/account-edit/account-edit.component';
-import { UserBillsComponent } from './user/user-bills/user-bills.component';
+import { AccountEditComponent } from './user/user-account/account-edit/account-edit.component';
+import { UserBillsComponent } from './user/user-account/user-bills/user-bills.component';
 import { RateInputComponent } from './crowdsource/rate-input/rate-input.component';
 import { AdminHomeComponent } from './admin/admin-home/admin-home.component';
 import { AdminApprovalComponent } from './admin/admin-approval/admin-approval.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import {AddBillComponent} from './user/user-account/add-bill/add-bill.component';
 import {CompareComponent} from './user/user-account/compare/compare.component';
+import {AboutComponent} from './user/user-account/about/about.component';
+import { LogoutComponent } from './user/user-account/logout/logout.component';
 
 export const routes: Routes = [
   { path: '', component: AppHomeComponent },
@@ -38,6 +40,8 @@ export const routes: Routes = [
 
       { path: 'compare', component: CompareComponent },
       { path: 'crowdsource', component: RateInputComponent },
+      { path: 'about', component: AboutComponent},
+      { path: 'logout', component: LogoutComponent }
 
     ]
   },

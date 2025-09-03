@@ -1,13 +1,15 @@
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {Component, OnInit} from '@angular/core';
-import { MunicipalityService, RateSummaryDto } from '../../shared/municipality.service';
-import {CurrencyPipe, NgForOf, NgIf} from '@angular/common';
-import {StarRatingComponent} from '../../shared/rating/rating.component';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import { MunicipalityService, RateSummaryDto } from '../municipality.service';
+import {CommonModule, CurrencyPipe, NgForOf, NgIf} from '@angular/common';
+import {StarRatingComponent} from '../rating/rating.component';
+import {finalize} from 'rxjs/operators';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   imports: [
+    CommonModule,
     CurrencyPipe,
     StarRatingComponent,
     ReactiveFormsModule,
@@ -25,9 +27,9 @@ export class SearchComponent implements OnInit {
 
   radiusOptions = [30, 60, 100, 250];
 
-  searchForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private svc: MunicipalityService) {}
+  searchForm!: FormGroup;
+  constructor(private fb: FormBuilder, private svc: MunicipalityService, private cdr: ChangeDetectorRef) {}
 
 ngOnInit() {
 
@@ -37,23 +39,23 @@ ngOnInit() {
     radius: [10, [Validators.required]],
     gallonsUsed: [5000, [Validators.min(0)]]
   });
-}
 
+}
   get zipCtrl() { return this.searchForm.get('zip'); }
 
-
+  trackById = (_: number, m: RateSummaryDto) => m?.municipalityId ?? _;
   onSearch() {
     if (this.searchForm.invalid) return;
 
-
     const { zip, radius, gallonsUsed } = this.searchForm.value as any;
-    this.loading = true; this.error = '';
-
+    this.loading = true;
+    this.error = '';
 
     this.svc.getNearby(String(zip), Number(radius), Number(gallonsUsed))
+      .pipe(finalize(() => this.loading = false))
       .subscribe({
-        next: arr => { this.results = arr ?? []; this.loading = false; },
-        error: e => { this.error = this.readableError(e); this.loading = false; }
+        next: arr => { this.results = arr ?? []; this.cdr.markForCheck(); },
+        error: e => this.error = this.readableError(e),
       });
   }
 

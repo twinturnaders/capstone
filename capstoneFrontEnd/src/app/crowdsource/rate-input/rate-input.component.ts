@@ -107,13 +107,13 @@ export class RateInputComponent {
   // Autocomplete control
   townCtrl = new FormControl<string>('', { nonNullable: true });
 
-  // Load & cache towns once; sort case/diacritic-insensitive
+
   allTowns$: Observable<TownOnlyDTO[]> = this.townService.getTownNames().pipe(
     map(list => [...list].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'accent' }))),
     shareReplay(1)
   );
 
-  // Case-insensitive filtering
+
   filteredTowns$: Observable<TownOnlyDTO[]> = combineLatest([
     this.allTowns$,
     this.townCtrl.valueChanges.pipe(startWith(''))

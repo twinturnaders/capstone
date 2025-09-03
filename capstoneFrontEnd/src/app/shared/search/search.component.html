@@ -30,11 +30,14 @@
 
 
   <div *ngIf="error" class="error-banner">{{ error }}</div>
-  <div *ngIf="!loading && results.length === 0 && searchForm.touched" class="no-results">No results yet. Try a different ZIP or radius.</div>
+  <div class="results">
+    <div *ngIf="!results.length && !loading && !error" class="muted">
+      No results yet. Try a search.
+    </div>
+
+    <table *ngIf="results.length">
 
 
-  <div class="results" *ngIf="results.length > 0">
-    <table>
       <thead>
       <tr>
         <th>Municipality</th>
@@ -45,7 +48,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let m of results">
+      <tr *ngFor="let m of results; trackBy: trackById">
         <td>{{ m.name }}</td>
         <td>{{ m.estimatedWaterCharge !== null && m.estimatedWaterCharge !== undefined ? (m.estimatedWaterCharge | currency) : '—' }}</td>
         <td>{{ m.estimatedSewerCharge !== null && m.estimatedSewerCharge !== undefined ? (m.estimatedSewerCharge | currency) : '—' }}</td>
