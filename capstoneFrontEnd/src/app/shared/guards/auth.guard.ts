@@ -1,20 +1,10 @@
-// src/app/core/guards/auth.guard.ts
-import {inject, Injectable} from '@angular/core';
-import {CanActivate, CanActivateFn, Router} from '@angular/router';
-import { TokenService } from '../services/token.service';
-import {AuthService} from '../services/auth.service';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-export const authGuard: CanActivateFn = () => {
-  const auth = inject(AuthService);
-  const router = inject(Router);
-  return auth.isAuthenticated() ? true : router.createUrlTree(['/login']);
-};
-@Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
-  constructor(private tokens: TokenService, private router: Router) {}
-  canActivate(): boolean {
-    if (this.tokens.isAuthenticated()) return true;
-    this.router.navigate(['/login']);
-    return false;
+export class AuthService {
+
+  isAuthenticated$(): Observable<boolean> {
+    const hasToken = !!localStorage.getItem('jwt');
+    return of(hasToken).pipe(map(Boolean));
   }
 }

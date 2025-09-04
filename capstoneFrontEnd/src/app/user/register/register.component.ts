@@ -8,11 +8,12 @@ import { finalize } from 'rxjs/operators';
 import { AuthService, RegisterRequest } from '../../shared/services/auth.service';
 import { FlashService } from '../../shared/services/flash.service';
 import { MunicipalityService, MunicipalityOption } from '../../shared/municipality.service';
+import {HomeButtonComponent} from '../../shared/home-button/home-button.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, HomeButtonComponent],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })

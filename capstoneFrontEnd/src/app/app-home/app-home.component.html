@@ -19,16 +19,17 @@
     <h2>Understanding the Confidence Rating</h2>
     <p>Each municipality is given a <strong>confidence rating</strong> from 1 to 5 stars:</p>
     <ul class="star-explanation">
-      <li>★ – Based on state-level (DNRC) or outdated data</li>
-      <li>★★ – Inferred or partial public info</li>
-      <li>★★★ – One user-submitted bill</li>
-      <li>★★★★ – Two or more consistent submissions</li>
-      <li>★★★★★ – Verified by admin with ordinance or full review</li>
+      <li><strong class = "star">★</strong>– Based on state-level (DNRC) or outdated data</li>
+      <li><strong class = "star">★★</strong>  – Inferred or partial public info</li>
+      <li><strong class = "star">★★★</strong>  – One user-submitted bill</li>
+      <li><strong class = "star">★★★★</strong> – Two or more consistent submissions</li>
+      <li><strong class = "star">★★★★★</strong> – Verified by admin with ordinance or full review</li>
     </ul>
   </section>
 
   <section class="cta">
     <button routerLink="/compare" class="cta-button">Compare Rates</button>
+    <router-outlet></router-outlet>
     <button routerLink="/crowdsource_form" class="cta-button">Submit A Town Water/Sewer Rate</button>
   </section>
   <section class="accounts">
@@ -44,7 +45,7 @@
     </p>
 
   </section>
- <section class="cta"> <button routerLink="/login" class="cta-button">Login/Account Home</button> </section>
+ <section class="cta"> <button routerLink="/go/login" class="cta-button">Login/Account Home</button> </section>
   <section class="cta"> <button routerLink="/register" class="cta-button">Register For Account</button> </section>
 </div>
 

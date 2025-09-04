@@ -4,6 +4,7 @@ import { MunicipalityService, RateSummaryDto } from '../municipality.service';
 import {CommonModule, CurrencyPipe, NgForOf, NgIf} from '@angular/common';
 import {StarRatingComponent} from '../rating/rating.component';
 import {finalize} from 'rxjs/operators';
+import {HomeButtonComponent} from '../home-button/home-button.component';
 
 @Component({
   selector: 'app-search',
@@ -14,7 +15,8 @@ import {finalize} from 'rxjs/operators';
     StarRatingComponent,
     ReactiveFormsModule,
     NgForOf,
-    NgIf
+    NgIf,
+    HomeButtonComponent
   ],
   styleUrls: ['./search.component.css'],
   standalone: true,

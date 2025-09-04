@@ -68,11 +68,14 @@ p, li {
   border-radius: 8px;
   padding: 1rem;
 }
-
+.star{
+  color: #012aa7;
+}
 
 .cta {
   display: flex;
   flex-wrap: wrap;
+
   justify-content: center;
   gap: 1rem;
   margin-top: 3rem;

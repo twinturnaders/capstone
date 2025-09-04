@@ -1,6 +1,7 @@
-.shell { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-.header h1 { margin: 0 0 .25rem; font-size: 1.75rem; }
-.muted { color: #afb0c5; }
+.submit-rates { display: flex; padding: 0 1rem; flex-direction: column; }
+.header{flex-direction: column; align-items: flex-end}
+.header h1 { margin: 0 0 .25rem; font-size: 3rem; color: #1b1e1b; align-items: center }
+.muted { color: #363c36; font-size: 1.5rem; align-items: center }
 
 .card {
   background: #c6d2cd; border: 1px solid #afb0c5; border-radius: .75rem; padding: 1rem;
@@ -9,7 +10,7 @@
 .grid {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;
 }
-@media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
+@media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }
 .field { display: flex; flex-direction: column; gap: 0.25rem; }
 label { color: var(--reseda-green); font-weight: 600; }
 input, select {
@@ -97,3 +98,14 @@ ng-container{
   background: #fff;
 }
 
+.account-shell { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+.account-header h1 { margin: 0 0 .25rem; font-size: 1.875rem; }
+.muted { color: #667085; }
+
+.tabs { display: flex; gap: .5rem; margin: 1rem 0 1.5rem; flex-wrap: wrap; }
+.tab-link {
+  display: inline-block; padding: .5rem .75rem; border-radius: .5rem;
+  background: #c6d2cd; color: #1b1e1b; text-decoration: none; border: 1px solid #c6d2cd;
+}
+.tab-link:hover { background: #ffffff; }
+.tab-link.active { background: #1b1e1b; color: #c6d2cd; border-color: #1b1e1b; }

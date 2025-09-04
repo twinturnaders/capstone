@@ -49,7 +49,7 @@ class RateCalculatorServiceTest {
         rv.setWaterRangeMax(max);
         rv.setWaterPPU(ppu);
         rv.setWaterFlatRateRange(flat);
-        rv.setMeasureUnit(unit); // enum you added
+        rv.setMeasureUnit(unit);
         return rv;
     }
 
@@ -65,7 +65,7 @@ class RateCalculatorServiceTest {
         assertEquals(0, expected.compareTo(actual), "Expected " + expected + " but was " + actual);
     }
 
-    /* ---------- Tests ---------- */
+
 
     @Test
     void fixedRate_ignoresOverage_addsWaterBaseFees() {
@@ -80,7 +80,10 @@ class RateCalculatorServiceTest {
 
     @Test
     void variableRate_kgalUnits_overageCeiling() {
-
+//water base rate 20
+// 3kgal included
+// 2.5/kgal after basegal usage of 1.5 units (always rounded up to nearest whole) -> 2 units
+// = 20 + (2.5 * 2)
         WaterRate wr = waterRate(new BigDecimal("20.00"), 3000, false);
         RateVariance v = waterVar(0, 0, new BigDecimal("2.50"), false, MeasureUnit.KGAL);
 
@@ -92,7 +95,11 @@ class RateCalculatorServiceTest {
 
     @Test
     void variableRate_hcfUnits_roundUpPartialUnit() {
-
+//base = 18
+// 2 kgal included
+// 3.1 / kgal 1 extra kgal usage
+// fee 1.9
+// -> = 18 + (3.1 * 1) + 1.9
         WaterRate wr = waterRate(new BigDecimal("18.00"), 2000, false);
         RateVariance v = waterVar(0, 0, new BigDecimal("3.10"), false, MeasureUnit.HCF);
 
@@ -107,9 +114,9 @@ class RateCalculatorServiceTest {
         // Base $10, base 1000, not fixed
         // Two variable tiers in kgal:
         //  - Tier1: 0..5000, $2.00 per kgal
-        //  - Tier2: 5001..∞, $3.00 per kgal
+        //  - Tier2: 5001.., $3.00 per kgal
         // usage 7000 -> overage 6000 gallons
-        // gallons in tier1 = 5000 - max(min, usage - remaining) math in your code resolves to 4000 here
+        // gallons in tier1 = 5000 - max(min, usage - remaining)
         //   (Overage first fills the higher end of usage within the tier window.)
         // gallons in tier2 = remaining 2000
         // units1 = ceil(4000/1000) = 4  -> $8.00
@@ -130,7 +137,7 @@ class RateCalculatorServiceTest {
     void flatRateTier_appliesOnce_whenUsageInRange() {
         // Base $12, base 0, not fixed
         // Flat tier (0..5000) has PPU 7.50 (applied once if usage falls in range)
-        // Variable tier (5001..∞) $2/kgal covers any above (but not used here since usage is 4000)
+        // Variable tier (5001..) $2/kgal covers any above (but not used here since usage is 4000)
         // usage 4000 -> falls in flat range -> total = 12 + 7.50 = 19.50
         WaterRate wr = waterRate(new BigDecimal("12.00"), 0, false);
 

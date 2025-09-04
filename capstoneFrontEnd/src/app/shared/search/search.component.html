@@ -1,8 +1,9 @@
+<app-home-button></app-home-button>
 <div class="search-container">
   <form class="search-form" (ngSubmit)="onSearch()" [formGroup]="searchForm" aria-label="Municipality search form">
     <div class="field">
       <label for="zip">ZIP Code</label>
-      <input id="zip" formControlName="zip" type="text" inputmode="numeric" maxlength="5" placeholder="59859" />
+      <input id="zip" formControlName="zip" type="text" inputmode="numeric" maxlength="5" placeholder="59801" />
       <div class="hint">Enter a 5-digit ZIP.</div>
       <div class="error" *ngIf="zipCtrl?.touched && zipCtrl?.invalid">Valid 5-digit ZIP required.</div>
     </div>
@@ -62,5 +63,6 @@
       </tr>
       </tbody>
     </table>
+
   </div>
 </div>

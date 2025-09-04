@@ -4,13 +4,15 @@ import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/
 import { AuthService } from '../../shared/services/auth.service';
 import {Router, RouterLink} from '@angular/router';
 import {NgIf} from '@angular/common';
+import {HomeButtonComponent} from '../../shared/home-button/home-button.component';
 
 @Component({
   selector: 'app-login',
   imports: [
     ReactiveFormsModule,
     NgIf,
-    RouterLink
+    RouterLink,
+    HomeButtonComponent
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],

@@ -9,17 +9,17 @@ import { UserBillsComponent } from './user/user-account/user-bills/user-bills.co
 import { RateInputComponent } from './crowdsource/rate-input/rate-input.component';
 import { AdminHomeComponent } from './admin/admin-home/admin-home.component';
 import { AdminApprovalComponent } from './admin/admin-approval/admin-approval.component';
-import { AuthGuard } from './shared/guards/auth.guard';
+
 import {AddBillComponent} from './user/user-account/add-bill/add-bill.component';
 import {CompareComponent} from './user/user-account/compare/compare.component';
 import {AboutComponent} from './user/user-account/about/about.component';
 import { LogoutComponent } from './user/user-account/logout/logout.component';
+import {LandingRedirectGuard} from './shared/guards/landing-redirect.guard';
 
 export const routes: Routes = [
   { path: '', component: AppHomeComponent },
   { path: 'compare', component: SearchComponent },
-  { path: 'login', component: LoginComponent },
-  { path: '', canActivate: [landingRedirectGuard], pathMatch: 'full', component: AccountEditComponent },
+
 
 
   { path: 'login', component: LoginComponent },
@@ -29,7 +29,6 @@ export const routes: Routes = [
   {
     path: 'user-account',
     component: UserAccountComponent,
-    canActivate: [AuthGuard],
     children: [
 
       { path: '', pathMatch: 'full', component: AccountEditComponent },

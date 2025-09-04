@@ -20,6 +20,7 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/ma
 import { MatOptionModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import {RouterOutlet} from '@angular/router';
+import {HomeButtonComponent} from '../../shared/home-button/home-button.component';
 
 
 type TierForm = FormGroup<{
@@ -58,7 +59,7 @@ const townChoiceValidator: ValidatorFn = (ctrl: AbstractControl): ValidationErro
   imports: [
     CommonModule, ReactiveFormsModule,
     MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatOptionModule,
-    MatCheckboxModule
+    MatCheckboxModule, HomeButtonComponent
   ],
   templateUrl: './rate-input.component.html',
   styleUrls: ['./rate-input.component.css'],
