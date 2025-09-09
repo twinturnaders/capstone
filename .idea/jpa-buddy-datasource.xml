@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JpbDataSourceConfig">
+    <data-source-infos>
+      <data-source-info id="fdbcdb3f-4917-43ca-85bc-080de67a0d5a" persistence-unit-name="brina-bright-app:brina-bright-app" />
+    </data-source-infos>
+  </component>
+</project>

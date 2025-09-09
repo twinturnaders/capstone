@@ -1,0 +1,53 @@
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    container_name: cap_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: capstone
+      POSTGRES_USER: capuser
+      POSTGRES_PASSWORD: cappass
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U capuser -d capstone"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cap_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/capstone
+      SPRING_DATASOURCE_USERNAME: capuser
+      SPRING_DATASOURCE_PASSWORD: cappass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cap_web
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+
+volumes:
+  dbdata:

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DiffGenerationConfig">
+    <option name="snapshotDbValue" value="fdbcdb3f-4917-43ca-85bc-080de67a0d5a" />
+    <option name="snapshotModelValue" value="brina-bright-app:brina-bright-app" />
+    <option name="sourceModelValue" value="brina-bright-app:brina-bright-app" />
+    <option name="targetDbValue" value="fdbcdb3f-4917-43ca-85bc-080de67a0d5a" />
+  </component>
+</project>
